@@ -378,9 +378,13 @@ function heartsMarkup() {
 }
 
 function updateScoreDisplay() {
-  document.getElementById("score").innerHTML = `
-    Score: ${score} <br>
-    High Score: ${highScore} <br>
+  const scoreEl = document.getElementById("score");
+  scoreEl.innerHTML = `
+    <div class="meta">
+      <span id="scoreVal">Score: ${score}</span>
+      <span id="highVal">High: ${highScore}</span>
+    </div>
+    <div id="timer">Time Left: <span id="timeLeft">${timeLeft ?? 10}</span>s</div>
     <div id="hearts">${heartsMarkup()}</div>
   `;
 }

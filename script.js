@@ -1,4 +1,3 @@
-
 function playSfx(key) {
   const a = SFX[key];
   if (!a) return;
@@ -461,3 +460,4 @@ function restartGame() {
   document.getElementById("gameOverScreen").style.display = "none";
   showQuestion();
 }
+

@@ -1,6 +1,7 @@
 /* ---------- GLOBAL STYLES ---------- */
+/* ---------- GLOBAL ---------- */
 :root {
-  --game-max: 500px;
+  --game-max: 440px; /* compact on desktop */
   --pad: 18px;
 }
 
@@ -13,36 +14,62 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100svh; /* small viewport height for mobile */
+  min-height: 100svh; /* mobile-safe viewport */
 }
 
 /* ---------- GAME CONTAINER ---------- */
 #game {
-  background: white;
+  background: #fff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  padding: 20px var(--pad);
+  padding: 18px 16px; /* reduced padding */
   width: 100%;
   max-width: var(--game-max);
   text-align: center;
 }
 
-/* ---------- HEADINGS & SCORE ---------- */
+/* ---------- HEADINGS ---------- */
 h1 {
   font-size: 1.8rem;
-  margin-bottom: 10px;
+  margin-bottom: 6px; /* tighter */
   color: #222;
 }
 
+/* ---------- SCORE STRIP (Score/High | Timer | Hearts) ---------- */
 #score {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto auto; /* meta | timer | hearts */
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
   font-weight: 500;
+  margin-bottom: 14px;
 }
 
-#score, #timer {
-  font-size: 1rem;
+#score .meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;         /* space between Score and High */
+  font-weight: 600;
+  justify-self: start;
 }
+
+#timer {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #333;
+  justify-self: center; /* sits in the middle */
+}
+
+#timeLeft { color: #e74c3c; }
+
+#hearts {
+  justify-self: end;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+#hearts img { height: 20px; margin: 0 3px; vertical-align: middle; }
 
 /* ---------- IMAGE ---------- */
 img#moveImage {
@@ -51,8 +78,22 @@ img#moveImage {
   max-height: 44vh;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
+  margin-bottom: 12px; /* tighter */
   object-fit: contain;
+}
+
+/* ---------- FEEDBACK (between GIF and choices) ---------- */
+#feedback {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 8px 0 6px; /* compact */
+  animation: pulse 0.4s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1) }
+  50% { transform: scale(1.08) }
+  100% { transform: scale(1) }
 }
 
 /* ---------- CHOICES ---------- */
@@ -64,16 +105,13 @@ img#moveImage {
   background: url('https://i.imgur.com/fBEyTji.png') center center no-repeat;
   background-size: contain;
 }
-
-#choicesWrapper.showingAnswers {
-  background: none;
-}
+#choicesWrapper.showingAnswers { background: none; }
 
 #choices {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin: 12px auto 0;
+  margin: 10px auto 0; /* tighter */
   max-width: 460px;
 }
 
@@ -81,8 +119,8 @@ img#moveImage {
   white-space: normal;
   word-break: break-word;
   line-height: 1.2;
-  padding: 14px 12px;
-  min-height: 56px;
+  padding: 10px 12px;     /* reduced */
+  min-height: 52px;       /* slightly smaller */
   font-size: 1rem;
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,.08);
@@ -110,42 +148,9 @@ img#moveImage {
   box-shadow: 0 6px 16px rgba(0,0,0,.08);
 }
 
-/* ---------- FEEDBACK ---------- */
-#feedback {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-top: 15px;
-  animation: pulse 0.4s ease-in-out;
-}
-
-#finalScore {
-  margin-top: 20px;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #27ae60;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1) }
-  50% { transform: scale(1.15) }
-  100% { transform: scale(1) }
-}
-
-/* ---------- HEARTS ---------- */
-#hearts {
-  margin-top: 10px;
-  font-size: 1.8rem;
-}
-
-.heart {
-  display: inline-block;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.heart.lost {
-  animation: shake 0.3s ease;
-  opacity: 0.2;
-}
+/* ---------- HEART STATES ---------- */
+.heart { display: inline-block; transition: transform .3s, opacity .3s; }
+.heart.lost { animation: shake .3s ease; opacity: .2; }
 
 @keyframes shake {
   0% { transform: translateX(0) }
@@ -155,18 +160,6 @@ img#moveImage {
   100% { transform: translateX(0) }
 }
 
-/* ---------- TIMER ---------- */
-#timer {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  font-weight: bold;
-  color: #333;
-}
-
-#timeLeft {
-  color: #e74c3c;
-}
-
 /* ---------- WIN ANIMATION ---------- */
 #winAnimation {
   position: fixed;
@@ -174,7 +167,7 @@ img#moveImage {
   left: 50%;
   transform: translate(-50%, -50%);
   background: #2ecc71;
-  color: white;
+  color: #fff;
   font-size: 2rem;
   padding: 20px 40px;
   border-radius: 20px;
@@ -235,13 +228,8 @@ img#moveImage {
   border-radius: 12px;
 }
 
-.loader-fade {
-  animation: loaderFade .35s ease forwards;
-}
-
-@keyframes loaderFade {
-  to { opacity: 0; visibility: hidden; }
-}
+.loader-fade { animation: loaderFade .35s ease forwards; }
+@keyframes loaderFade { to { opacity: 0; visibility: hidden; } }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 420px) {
@@ -253,10 +241,18 @@ img#moveImage {
     box-shadow: 0 6px 18px rgba(0,0,0,.08);
   }
 
-  #choices {
-    grid-template-columns: 1fr;
-    gap: 10px;
+  /* Stack score strip on phones: meta | hearts on row 1; timer full row under */
+  #score {
+    grid-template-columns: 1fr auto;
+    row-gap: 6px;
   }
+  #timer {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: 2px;
+  }
+
+  #choices { grid-template-columns: 1fr; gap: 10px; }
 
   #choices button {
     font-size: 1.05rem;
@@ -265,11 +261,7 @@ img#moveImage {
     padding: 14px 14px;
   }
 
-  img#moveImage {
-    max-height: 38vh;
-  }
-
-  #timer { margin-top: 6px; }
+  img#moveImage { max-height: 38vh; }
 }
 
 @media (max-width: 340px) {
@@ -278,6 +270,46 @@ img#moveImage {
   #score, #timer { font-size: .95rem; }
 }
 
+/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+}
+/* MOBILE FULLSCREEN GAME */
+#mobileFullscreen {
+  display: block; /* default desktop shows normally */
+}
+
+@media (max-width: 420px) {
+  #mobileFullscreen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+  }
+
+  #game {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #exitFullscreen {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 100000;
+  }
 }

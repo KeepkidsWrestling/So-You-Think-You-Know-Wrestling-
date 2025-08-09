@@ -1,4 +1,3 @@
-/* ---------- GLOBAL STYLES ---------- */
 /* ---------- GLOBAL ---------- */
 :root {
   --game-max: 440px; /* compact on desktop */
@@ -68,7 +67,6 @@ h1 {
   margin: 0;
   font-size: 1.5rem;
 }
-
 #hearts img { height: 20px; margin: 0 3px; vertical-align: middle; }
 
 /* ---------- IMAGE ---------- */
@@ -89,7 +87,6 @@ img#moveImage {
   margin: 8px 0 6px; /* compact */
   animation: pulse 0.4s ease-in-out;
 }
-
 @keyframes pulse {
   0% { transform: scale(1) }
   50% { transform: scale(1.08) }
@@ -176,7 +173,6 @@ img#moveImage {
   animation: fadeInOut 1s ease-in-out forwards;
   display: none;
 }
-
 @keyframes fadeInOut {
   0% { opacity: 0; transform: translate(-50%,-60%) scale(0.8); }
   10% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
@@ -196,14 +192,12 @@ img#moveImage {
   align-items: center;
   text-align: center;
 }
-
 #gameOverContent {
   background: #222;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 0 20px #fff;
 }
-
 #gameOverContent button {
   padding: 10px 20px;
   font-size: 1.2rem;
@@ -221,15 +215,21 @@ img#moveImage {
   background: #000;
   z-index: 1000;
 }
-
 #loader video {
   width: min(92vw, 520px);
   height: auto;
   border-radius: 12px;
 }
-
 .loader-fade { animation: loaderFade .35s ease forwards; }
 @keyframes loaderFade { to { opacity: 0; visibility: hidden; } }
+
+/* ---------- MOBILE FULLSCREEN WRAPPER (desktop shows normally) ---------- */
+#mobileFullscreen {
+  display: block;        /* was: none */
+  position: static;      /* not fixed on desktop */
+  background: transparent;
+  z-index: auto;
+}
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 420px) {
@@ -252,64 +252,43 @@ img#moveImage {
     margin-top: 2px;
   }
 
-  #choices { grid-template-columns: 1fr; gap: 10px; }
-
+  /* 2×2 answers on mobile */
+  #choices {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    justify-items: center;
+  }
   #choices button {
-    font-size: 1.05rem;
-    min-height: 58px;
-    line-height: 1.25;
-    padding: 14px 14px;
+    width: 100%;
+    max-width: 140px;
+    font-size: 0.9rem;
+    padding: 8px;
+    min-height: 54px;
   }
 
   img#moveImage { max-height: 38vh; }
+
+  /* Full-screen behavior only on phones */
+  #mobileFullscreen {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 9999;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  body { overflow: hidden; }
 }
+
 
 @media (max-width: 340px) {
   h1 { font-size: 1.2rem; }
-  #choices button { font-size: .98rem; min-height: 54px; }
+  #choices button { font-size: .98rem; min-height: 50px; }
   #score, #timer { font-size: .95rem; }
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
-}
-/* MOBILE FULLSCREEN GAME */
-#mobileFullscreen {
-  display: block; /* default desktop shows normally */
-}
-
-@media (max-width: 420px) {
-  #mobileFullscreen {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-  }
-
-  #game {
-    max-width: 100%;
-    max-height: 100%;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  #exitFullscreen {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    font-size: 1.4rem;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    z-index: 100000;
-  }
 }

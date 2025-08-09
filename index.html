@@ -1,93 +1,167 @@
     <!DOCTYPE html>
-    <html>
-      <head>
-        <title>So You Think You Know Wrestling?</title>
-        <link rel="stylesheet" href="style.css" />
-      </head>
-      <body>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>So You Think You Know Wrestling?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Wrapper exists on all screens, but only becomes fullscreen on mobile */
+      #mobileFullscreen {
+        display: block;              /* visible on desktop */
+        position: static;            /* normal flow on desktop */
+        background: transparent;
+        z-index: auto;
+        overflow: visible;
+      }
 
-        <!-- Loader Splash (2.5s) -->
-        <div id="loader" style="display:flex;">
-          <video id="loaderVideo"
-                 autoplay
-                 muted
-                 playsinline
-                 preload="auto"
-                 poster="https://i.imgur.com/NLTkGlY.jpg">
-            <source src="https://i.imgur.com/NLTkGlY.mp4" type="video/mp4">
-          </video>
-        </div>
+      /* Hide the X by default (desktop) */
+      #exitFullscreen {
+        display: none;
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 1.8rem;
+        background: rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 8px;
+        padding: 4px 8px;
+        cursor: pointer;
+        z-index: 10000;
+      }
 
-        <!-- Start Screen -->
-        <div id="startScreen" style="text-align:center; padding:20px;">
-          <h1>So You Think You Know Wrestling?</h1>
-          <p>
-            This is a timed challenge for true wrestling fans! Watch a quick clip of a move, then you’ll have
-            <strong>10 seconds</strong> to correctly name it.
-          </p>
-          <p>
-            You only get <strong>3 strikes</strong> before it’s game over. Let’s see if you really know how to wrestle!
-          </p>
-          <button id="startBtn">▶️ Start Game</button>
-        </div>
+      /* On phones: make the wrapper fullscreen and show the X */
+      @media (max-width: 420px) {
+        #mobileFullscreen {
+          display: flex;
+          position: fixed;
+          inset: 0;
+          background: #fff;
+          z-index: 9999;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        #exitFullscreen {
+          display: block;
+        }
+        body {
+          overflow: hidden; /* prevent background scroll while overlay is up */
+        }
+      }
+    </style>
 
-        <!-- Game Screen -->
-        <div id="game" style="display:none;">
-          <h1>So You Think You Know Wrestling</h1>
+  </head>
+  <body>
 
-          <!-- Score and Hearts -->
-          <div id="score">
-            Score: 0<br>
-            High Score: 0<br>
-            <!-- Hearts will be injected dynamically by JS -->
+    <!-- MOBILE FULLSCREEN WRAPPER -->
+    <div id="mobileFullscreen">
+      <button id="exitFullscreen">✖</button>
+
+      <!-- Loader Splash (2.5s) -->
+      <div id="loader" style="display:flex;">
+        <video id="loaderVideo"
+               autoplay
+               muted
+               playsinline
+               preload="auto"
+               poster="https://i.imgur.com/NLTkGlY.jpg">
+          <source src="https://i.imgur.com/NLTkGlY.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <!-- Start Screen -->
+      <div id="startScreen" style="text-align:center; padding:20px;">
+        <h1>So You Think You Know Wrestling?</h1>
+        <p>
+          This is a timed challenge for true wrestling fans! Watch a quick clip of a move, then you’ll have
+          <strong>10 seconds</strong> to correctly name it.
+        </p>
+        <p>
+          You only get <strong>3 strikes</strong> before it’s game over. Let’s see if you really know how to wrestle!
+        </p>
+        <button id="startBtn">▶️ Start Game</button>
+      </div>
+
+      <!-- Game Screen -->
+      <div id="game" style="display:none;">
+        <h1>So You Think You Know Wrestling?</h1>
+
+        <!-- Compact score strip: [Score/High] | [Timer] | [Hearts] -->
+        <div id="score">
+          <div class="meta">
+            <span id="scoreVal">Score: 0</span>
+            <span id="highVal">High: 0</span>
           </div>
 
-          <!-- Win Animation -->
-          <div id="winAnimation" style="display:none;"></div>
-
-          <!-- Timer -->
           <div id="timer">Time Left: <span id="timeLeft">10</span>s</div>
 
-          <!-- Wrestling Move Image -->
-          <img id="moveImage" src="" width="300" alt="Wrestling Move"><br><br>
-
-          <!-- Answer Choices -->
-          <div id="choicesWrapper">
-            <div id="choices">
-              <button id="button1"></button>
-              <button id="button2"></button>
-              <button id="button3"></button>
-              <button id="button4"></button>
-            </div>
-          </div>
-
-          <!-- Feedback and Score -->
-          <div id="feedback" style="margin-top:10px;"></div>
-          <div id="finalScore" style="margin-top:10px;"></div>
+          <div id="hearts"><!-- hearts injected by JS --></div>
         </div>
 
-        <!-- Game Over Screen -->
-        <div id="gameOverScreen" style="display: none; justify-content:center; align-items:center; flex-direction:column; text-align:center;">
-          <div id="gameOverContent">
-            <!-- Game over image will be set dynamically -->
-            <p id="finalStats"></p>
-            <button onclick="restartGame()"></button>
+        <!-- Wrestling Move Image -->
+        <img id="moveImage" src="" width="300" alt="Wrestling Move">
+
+        <!-- Feedback -->
+        <div id="feedback"></div>
+
+        <!-- Answer Choices -->
+        <div id="choicesWrapper">
+          <div id="choices">
+            <button id="button1"></button>
+            <button id="button2"></button>
+            <button id="button3"></button>
+            <button id="button4"></button>
           </div>
         </div>
-      </body>
-    </html>
 
-    <!-- Sounds -->
-  <audio id="sound-correct" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/correct-356013.mp3"></audio>
-  <audio id="sound-wrong" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/incorrect-buzzer-374194.mp3"></audio>
-  <audio id="sound-over" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/nuclear-explosion-386181.mp3"></audio>
-  <audio id="sound-restart" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/video-game-power-up-sound-effect-384657.mp3"></audio>
-  <audio id="sound-tick" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/times.up.sonic.sound.mp3"></audio>
-<audio id="sound-clock" preload="auto"
-src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/clock-tick-tock-sfx-379470.mp3">
-</audio>
+        <div id="finalScore" style="margin-top:10px;"></div>
+      </div>
 
-  <script src="script.js"></script>
-  </body>
+      <!-- Game Over Screen -->
+      <div id="gameOverScreen" style="display:none; justify-content:center; align-items:center; flex-direction:column; text-align:center;">
+        <div id="gameOverContent">
+          <p id="finalStats"></p>
+          <button onclick="restartGame()"></button>
+        </div>
+      </div>
+
+      <!-- Win Animation -->
+      <div id="winAnimation" style="display:none;"></div>
+
+      <!-- Sounds -->
+      <audio id="sound-correct" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/correct-356013.mp3"></audio>
+      <audio id="sound-wrong" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/incorrect-buzzer-374194.mp3"></audio>
+      <audio id="sound-over" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/nuclear-explosion-386181.mp3"></audio>
+      <audio id="sound-restart" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/video-game-power-up-sound-effect-384657.mp3"></audio>
+      <audio id="sound-tick" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/times.up.sonic.sound.mp3"></audio>
+      <audio id="sound-clock" preload="auto" src="https://keepkidswrestling.github.io/wrestling.quiz.sound.effects/clock-tick-tock-sfx-379470.mp3"></audio>
+    </div>
+
+   <script src="script.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobileFullscreen = document.getElementById("mobileFullscreen");
+      const exitBtn = document.getElementById("exitFullscreen");
+
+      // If the overlay exists, set its initial state based on screen size
+      const isPhone = window.matchMedia("(max-width: 420px)").matches;
+
+      if (mobileFullscreen) {
+        // On desktop, it's just a normal wrapper (CSS takes care of layout)
+        // On phones, CSS makes it fullscreen overlay; no JS needed to "show" it
+      }
+
+      // Exit button only exists / shows on phones (CSS), but guard anyway
+      if (exitBtn && mobileFullscreen) {
+        exitBtn.addEventListener("click", () => {
+          // Hide the overlay if user closes it
+          mobileFullscreen.style.display = "none";
+          // Restore scrolling just in case
+          document.body.style.overflow = "";
+        });
+      }
+    });
+    </script>
+
+</body>
 </html>
